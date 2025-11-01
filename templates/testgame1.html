@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="teststyle.css"/>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+    integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script> -->
+
+    <!-- <style>
+        @font-face {
+    font-family: 'doors'; /* Choose a descriptive name for your font */
+    src: url("{{url_for('static', filename='fonts/yabogatiroblox.ttf')}}") format('truetype');
+    font-display: swap;
+    }
+    </style> -->
+</head>
+<body>
+
+    <div class="content">
+<div>
+<div id="encloser">
+  <!-- <h1 id="p">GAME</h1> -->
+
+  <div id="countdown">2:00</div>
+  <div id="playerdata">
+    <div><b>Player:</b> Pratham , <b>Points:</b> 2 </div>
+    <div><b>Player:</b> Abhishek , <b>Points:</b> 3 </div>
+  </div>
+  <div id="wordinputcontainer">
+    <div id="wordinput">
+  <div id="word">
+    <div> <b> Word: BANANA</b>, Length: 6</div>
+  </div>
+  <div id="input">
+    <input type="text" maxlength='1' class="inputs" required />
+    <input type="text" maxlength='1' class="inputs" required />
+    <input type="text" maxlength='1' class="inputs" required />
+    <input type="text" maxlength='1' class="inputs" required />
+    
+  </div>
+  </div>
+  </div>
+  
+  <input type="text" placeholder="Guess" name="guess" id="guess" value=""/>
+  <!-- <button name="skip" id="skip" onclick=skip() >Skip</button> -->
+  <div id="status"><p> <b>-</b> 3 </p></div>
+
+  
+</div>
+
+    </div>
+
+    <div id="readypage">
+      <div id="readybox">
+    <p id="p">Instructions</p>
+  
+    <button id="ready">Ready</button>
+    
+  
+  </div>
+  <div id="ctdwn" style="display: none;">5</div>
+  </div>
+
+    <div id="overlay1" ></div><div id="overlay2" ></div>
+    </div>
+</body>
+
+
+
+
+<script>
+
+let inter;
+let columns = Math.floor(window.innerWidth / 50);
+let rows = Math.floor(window.innerHeight / 50);
+let center_column = Math.floor(columns/2);
+let center_row = Math.floor(rows/2);
+
+const wrapper = document.getElementById("encloser");
+
+const createTiles = (columns, rows) => {
+    let tile;
+
+    for (i=1; i<=rows; i++){
+      for (j=1; j<=columns; j++){
+        tile = document.createElement("div");
+        wrapper.appendChild(tile);
+        tile.classList.add("tile");
+        tile.style.setProperty("--r1",i);
+        tile.style.setProperty("--r2",i+1);
+        tile.style.setProperty("--c1",j);
+        tile.style.setProperty("--c2",j+1);
+        
+      }
+      
+    }
+
+   
+    
+}
+
+document.documentElement.style.setProperty("--rows",rows);
+document.documentElement.style.setProperty("--columns",columns);
+document.documentElement.style.setProperty("--center_column", center_column);
+document.documentElement.style.setProperty("--center_row", center_row);
+
+createTiles(columns, rows);
+
+const createGrid = () => {
+  const elementsToRemove = document.querySelectorAll('.tile');
+            elementsToRemove.forEach(element => {
+                element.remove();
+            });
+
+    columns = Math.floor(document.body.clientWidth / 50);
+  rows = Math.floor(document.body.clientHeight / 50);
+  center_column = Math.floor(columns/2);
+  center_row = Math.floor(rows/2);
+
+
+  document.documentElement.style.setProperty("--rows",rows);
+document.documentElement.style.setProperty("--columns",columns);
+document.documentElement.style.setProperty("--center_column", center_column);
+document.documentElement.style.setProperty("--center_row", center_row);
+
+  createTiles(columns , rows);
+}
+
+
+window.onresize = () => createGrid();
+
+document.getElementById("ready").addEventListener("click", function(){
+
+  document.getElementById("readybox").style.setProperty("display",'none');
+  document.getElementById("overlay1").classList.add("anim1");
+  document.getElementById("overlay2").classList.add("anim2");
+  let ctdwn = document.getElementById("ctdwn");
+  ctdwn.style.setProperty("display",'block');
+
+  let i=4;
+  inter = setInterval(function(){
+    if (i==-1){
+      clearInterval(inter);
+      document.getElementById("readypage").style.setProperty("display",'none');
+    }
+    ctdwn.innerHTML = `<p>${i}</p>`;
+    i--;
+  },1000);
+
+
+})
+
+</script>
+
+
+</html>

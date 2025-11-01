@@ -1,0 +1,250 @@
+{% extends 'base.html' %} {% block content %}
+
+<div id="encloser">
+  <h1>GAME</h1>
+
+  <div id="countdown">2:00</div>
+  <div id="playerdata"></div>
+  <div id="word"></div>
+  <div id="input">
+    
+    
+  </div>
+  
+  <input type="text" placeholder="Guess" name="guess" id="guess" value=""/>
+  <!-- <button name="skip" id="skip" onclick=skip() >Skip</button> -->
+  <div id="status"></div>
+
+  <div id="readypage">
+  <div id="popup">
+    <button id="ready" onclick="imready()">Ready</button>
+  </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  var socketio = io();
+
+  var players = {};
+
+  let timeout = false;
+
+  let duration = 120;
+  let countdown = document.getElementById("countdown");
+  let interval;
+
+  function timer() {
+    let minutes = Math.floor(duration / 60);
+    let seconds = duration % 60;
+
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    countdown.innerHTML = `<p> ${minutes} : ${seconds} </p>`;
+
+    if (duration == 0) {
+      timeout = true;
+      socketio.emit("gameover");
+      console.log("game over");
+      countdown.innerHTML = `<p> Game Over </p>`;
+      clearInterval(interval);
+    }
+
+    duration--;
+  }
+
+  function imready() {
+    socketio.emit("ready");
+  }
+
+  function showinput(n){
+    inp = document.getElementById("input");
+    inp.innerHTML = `<input type="text" maxlength='1' oninput="handleInput(0)"  class="inputs" required />`;
+
+    for (i=1; i<n; i++){
+      inp.innerHTML += `<input type="text" maxlength='1' oninput="handleInput(${i})" onkeydown="handleBackspace(${i},event)" class="inputs" required />`;
+    }
+
+    const elements = document.getElementsByClassName('inputs');
+    elements[0].focus();
+    console.log(inp.innerhtml);
+  }
+
+  function handleInput(n){
+    const elements = document.getElementsByClassName('inputs');
+    if (n+1==elements.length){
+      validate();
+      return;
+    }
+
+    if (elements[n].value.length == 1){
+const a = elements[n];
+    const b = elements[n+1];
+    
+      b.focus();
+    }
+    
+
+  }
+
+  function handleBackspace(n, event){
+
+    if (event.key == "Backspace"){
+      const elements = document.getElementsByClassName('inputs');
+      const a = elements[n];
+      const b = elements[n-1];
+     
+    
+      b.focus();
+    }
+
+  }
+
+  function validate() {
+    if (timeout) {
+      return;
+    }
+
+    const guess = document.getElementById("guess");
+
+    const elements = document.getElementsByClassName("inputs");
+    for (const element of elements){
+      guess.value += element.value;
+      element.value = "";
+    }
+    console.log(guess.value);
+    socketio.emit("validate", { guess: guess.value });
+    
+
+    guess.value = "";
+  }
+
+  document.addEventListener("keydown", function(event){
+    if ((event.ctrlKey||event.metaKey) && event.key=='s'){
+      event.preventDefault();
+      skip();
+    }
+  })
+
+  function skip(){
+
+    if (timeout) {
+      return;
+    }
+    let status = document.getElementById("status");
+    const guess = document.getElementById("guess");
+
+    const elements = document.getElementsByClassName("inputs");
+    for (const element of elements){
+      element.value = "";
+    }
+
+    let i;
+    if (elements.length<5){
+      i = 3;
+    } else if (elements.length<7){
+      i = 2;
+    } else {
+      i = 1; 
+    }
+    status.innerHTML = `<p> <b>-</b> ${i} </p>`;
+    socketio.emit("skip");
+    
+
+    guess.value = "";
+  }
+
+  const dispinfo = (data) => {
+    let disp = document.getElementById("playerdata");
+    disp.innerHTML = "";
+    for (const key in data) {
+      players[key] = data[key];
+      var content = `<div><b>Player:</b> ${key} , <b>Points:</b> ${data[key]} </div> `;
+
+      disp.innerHTML += content;
+    }
+  };
+
+  socketio.on("playeradded", (data) => {
+    dispinfo(data);
+  });
+
+  socketio.on("startgame", (word, wordlen, difficulty) => {
+    let popup = document.getElementById("popup");
+    let disp = document.getElementById("word");
+    let body = document.getElementsByTagName("body");
+    if (difficulty == "easy") {
+      body[0].classList.remove("medium");
+      body[0].classList.remove("hard");
+      body[0].classList.add("easy");
+    } else if (difficulty == "medium") {
+      body[0].classList.remove("easy");
+      body[0].classList.remove("hard");
+      body[0].classList.add("medium");
+    } else {
+      body[0].classList.remove("easy");
+      body[0].classList.remove("medium");
+      body[0].classList.add("hard");
+    }
+    var content = `<div> <b> Word: ${word}</b>, Length: ${wordlen}</div>`;
+    disp.innerHTML = content;
+    showinput(wordlen);
+    popup.style.display = "none";
+
+    interval = setInterval(timer, 1000);
+  });
+
+  socketio.on("validatedguess", (data) => {
+    let status = document.getElementById("status");
+    console.log(data);
+    if (data!=0) {
+      status.innerHTML = `<p> <b>+</b> ${data}</p>`;
+    } else {
+      const elements = document.getElementsByClassName("inputs");
+      elements[0].focus();
+      status.innerHTML = `<p> Incorrect </p>`;
+    }
+
+    setTimeout(function () {
+      let status = document.getElementById("status");
+      status.innerHTML = ``;
+    }, 5000);
+  });
+
+  socketio.on("ptsupdate", (name, pts) => {
+    console.log(name, pts);
+    players[name] = pts;
+    console.log(players);
+    dispinfo(players);
+  });
+
+  socketio.on("newword", (word, wordlen, difficulty) => {
+    let disp = document.getElementById("word");
+    let body = document.getElementsByTagName("body");
+    if (difficulty == "easy") {
+      body[0].classList.remove("medium");
+      body[0].classList.remove("hard");
+      body[0].classList.add("easy");
+    } else if (difficulty == "medium") {
+      body[0].classList.remove("easy");
+      body[0].classList.remove("hard");
+      body[0].classList.add("medium");
+    } else {
+      body[0].classList.remove("easy");
+      body[0].classList.remove("medium");
+      body[0].classList.add("hard");
+    }
+    var content = `<div> <b> Word: ${word}</b>, Length: ${wordlen}</div>`;
+    disp.innerHTML = content;
+    showinput(wordlen);
+  });
+
+
+
+
+
+</script>
+
+
+
+
+{% endblock %}

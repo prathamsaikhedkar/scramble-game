@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<h3> HOME </h3>
+
+<form method="post">
+
+    <label>Enter name:</label>
+    
+    <input type="text" name="entered_name" value="{{entered_name}}"/>
+
+    <label>Enter room code:</label>
+    <input type="text" name="room_code" value="{{room_code}}"/>
+
+    <button type="submit" name="join" id="join">Join room</button>
+    <button type="submit" name="create" id="create">Create room</button>
+</form>
+
+
+{% if error %}
+<p>Error: {{error}}</p>
+{% endif %}
+
+<script type="text/javascript">
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,285 @@
+{% extends "testbase.html" %}
+
+{% block content %}
+
+<style>
+    body{
+        background-color: white;
+    }
+</style>
+
+<div id="encloser">
+
+  <div id="leaderboard">
+        <h2>Leaderboard (Top Players by Total Points)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Total Points</th>
+                    <th>Peak Score Time</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+                <!-- Rows populated by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="logo"><div>SCRAMBLE</div><div>BATTLES</div></div>
+    <button id="playbtn">Play </button>
+
+    
+
+
+
+
+
+</div>
+<form method="post" id="form">
+<div id="roompagecontainer">
+  <div id="roompage">
+    <button id="backbutton" type="button">X</button>
+
+    <div id="heading"><u>PLAY</u></div>
+    
+      <div id="namecontainer">
+    <label>Enter name:</label>
+    
+    <input type="text" style="width: 70%; text-align:center;" name="entered_name" maxlength="10" value="{{entered_name}}"/>
+    </div>
+    <div id="line"></div>
+    <div id="joincreate">
+      <div id="joincontainer">
+    <label>Enter room code:</label>
+    <input type="text" style="width: 70%; text-align:center;" name="room_code" value="{{room_code}}"/>
+    <button type="submit"  name="join" id="join">Join room</button>
+    </div>
+    <div id="or">----OR----</div>
+    <div id="createcontainer">
+    <button type="submit" name="create" id="create">Create room</button>
+    </div>
+    </div>
+    
+  </div>
+</div>
+</form>
+
+
+{% if error %}
+<p>Error: {{error}}</p>
+{% endif %}
+
+<script>
+    let columns = Math.floor(window.innerWidth / 50);
+  let rows = Math.floor(window.innerHeight / 50);
+  let center_column = Math.floor(columns / 2);
+  let center_row = Math.floor(rows / 2);
+
+  const wrapper = document.getElementById("encloser");
+
+  const createTiles = (columns, rows) => {
+    let tile;
+    let count=1;
+
+    for (i = 1; i <= rows; i++) {
+      for (j = 1; j <= columns; j++) {
+        tile = document.createElement("div");
+        tile.id = `${count}`;
+        wrapper.appendChild(tile);
+        tile.classList.add("tile");
+        tile.style.setProperty("--r1", i);
+        tile.style.setProperty("--r2", i + 1);
+        tile.style.setProperty("--c1", j);
+        tile.style.setProperty("--c2", j + 1);
+        count++;
+      }
+    }
+  };
+
+  document.documentElement.style.setProperty("--rows", rows);
+  document.documentElement.style.setProperty("--columns", columns);
+  document.documentElement.style.setProperty("--center_column", center_column);
+  document.documentElement.style.setProperty("--center_row", center_row);
+
+  createTiles(columns, rows);
+
+  const createGrid = () => {
+    const elementsToRemove = document.querySelectorAll(".tile");
+    elementsToRemove.forEach((element) => {
+      element.remove();
+    });
+
+    columns = Math.floor(document.body.clientWidth / 50);
+    rows = Math.floor(document.body.clientHeight / 50);
+    center_column = Math.floor(columns / 2);
+    center_row = Math.floor(rows / 2);
+
+    document.documentElement.style.setProperty("--rows", rows);
+    document.documentElement.style.setProperty("--columns", columns);
+    document.documentElement.style.setProperty(
+      "--center_column",
+      center_column
+    );
+    document.documentElement.style.setProperty("--center_row", center_row);
+
+    createTiles(columns, rows);
+  };
+
+  window.onresize = () => createGrid();
+
+  let colors = {
+    
+    0:"#B3FFC7",
+    1:"#B3D1FF",
+    2:"#FFDBDB",
+    3:"#F5FAAC"
+  };
+  let alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 
+ 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 
+ 'y', 'z'];
+  let count1 = 1;
+  let count2 = 0;
+
+  function randomInt(max) {
+    return (Math.floor(Math.random() * max));
+}
+
+ function anim(){
+
+  let i = 1 + randomInt(rows*columns);
+  let j = randomInt(26);
+  console.log(i);
+  let el = document.getElementById(i);
+  //el.style.setProperty("background-color",'black');
+
+  el.innerText = alpha[j];
+  //count2++;
+  setTimeout(function(){ el.innerText = ""; }, 4000);
+
+  anime({
+        targets: el,
+        backgroundColor: [colors[count1 % 4],"rgb(255,255,255)"],
+        ease: 'spring({bounce:0.35})',
+        duration: 50000
+      });
+
+      count1++;
+      
+
+  
+
+  /*anime({
+        targets: ".tile",
+        backgroundColor: colors[count % 4],
+        delay: anime.stagger(150),
+        composition: 'additive',
+        duration: 500
+      });
+
+      count++;
+      */
+
+      
+    }
+
+
+    let playtbn = document.getElementById("playbtn");
+
+    playbtn.addEventListener("mouseenter", () => {
+        anime({
+            targets: playbtn,
+            duration: 1000,
+            scale:1.3,
+            backgroundColor: 'white',
+            color:'black',
+            ease: 'spring({bounce:0.35})'
+        });
+    });
+
+    playbtn.addEventListener("mouseleave", () => {
+        anime({
+            targets: playbtn,
+            duration: 1000,
+            scale:1,
+            backgroundColor: 'white',
+            color:'black',
+            ease: 'linear()'
+        });
+    });
+
+setInterval(anim,300);
+
+let container = document.getElementById("roompagecontainer");
+  let page = document.getElementById("roompage");
+
+function disproompage(){
+
+  container.style.setProperty("display","flex");
+
+  anime.timeline({
+    easing: 'easeOutQuad',
+    duration: 300
+  })
+  .add({
+    targets: container,
+    opacity: [0,1]
+  },0)
+  .add({
+    targets: page,
+    scale: [0,1]
+  },0);
+}
+
+function hideroompage(){
+
+  anime.timeline({
+    easing: 'easeOutQuad',
+    duration: 300
+  })
+  .add({
+    targets: container,
+    opacity: [1,0]
+  },0)
+  .add({
+    targets: page,
+    scale: [1,0]
+  },0);
+
+  setTimeout(function(){
+    container.style.setProperty("display","none");
+  },320);
+}
+
+document.getElementById("playbtn").addEventListener("click",disproompage);
+document.getElementById("backbutton").addEventListener("click",hideroompage);
+
+function fetchLeaderboard() {
+        fetch('/leaderboard')
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.getElementById('leaderboard-body');
+                tbody.innerHTML = '';
+                data.leaderboard.forEach((entry, index) => {
+                    const row = `<tr>
+                        <td>${index + 1}</td>
+                        <td>${entry.name}</td>
+                        <td>${entry.total_points}</td>
+                        <td>${entry.peak_time || 'N/A'}</td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            })
+            .catch(error => console.error('Error fetching leaderboard:', error));
+    }
+
+    // Load leaderboard on page load
+    window.addEventListener('load', fetchLeaderboard);
+    
+
+
+
+</script>
+
+{% endblock %}
