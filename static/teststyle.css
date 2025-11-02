@@ -180,9 +180,10 @@ body{
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Nunito';
-  font-weight: 200;
-  font-size: 12px;
+  font-family: 'aom';
+  font-weight: 100;
+  font-size: 18px;
+  color: rgb(71, 71, 71);
 }
 
 #encloser{
@@ -358,6 +359,19 @@ body{
   width: 30px;
   border-radius: 3px;
 }
+
+#lbbackbutton{
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  background-color: rgb(255, 86, 86);
+  border: 1px solid black;
+  height: 30px;
+  width: 30px;
+  border-radius: 3px;
+}
+
+
 #heading{
   font-size: 35px;
 }
@@ -443,34 +457,78 @@ body{
   font-size: 70px;
   font-family: 'doors';
   text-align: center;
+  background-color: rgb(255, 255, 255);
 }
 
+#buttons{
+  grid-row: calc(var(--center_row) + 1) / span 3;
+  grid-column: var(--center_column) / span 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: 'doors';
+  font-size: 25px;
+  background-color: rgb(255, 255, 255);
+  
+}
 
 #playbtn{
-  grid-row: calc(var(--center_row) + 1) / span 2;
-  grid-column: var(--center_column) / span 3;
+  margin-bottom: 5px;
   color: white;
   background-color: black;
   height: 50px;
   width: 120px;
-  justify-self: center;
-  align-self: center;
   border-radius: 3px;
   font-family: 'doors';
   font-size: 25px;
   border: 1px solid black;
 }
 
-#leaderboard {
+#backbutton:hover{
+  background-color: maroon;
+  color: white;
+}
+#lbbackbutton:hover{
+  background-color: maroon;
+  color: white;
+}
+
+#lbbtn{
+  margin-top: 5px;
+  color: rgb(0, 0, 0);
+  background-color: rgb(255, 255, 255);
+  height: 40px;
+  width: 100px;
+  border-radius: 3px;
+  font-family: 'doors';
+  font-size: 18px;
+  border: 1px solid black;
+}
+
+#leaderboard{
+  
+  height: 70%;
+  width: 60%;
+  background-color: white;
+  padding: 10px;
+  border: 2px solid black;
+  border-radius: 5px;
+}
+
+
+#lbencloser {
+  
     position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid black;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.253);
     z-index: 10;
-    max-width: 300px;
 }
 
 #leaderboard h2 {

@@ -8,10 +8,11 @@
     }
 </style>
 
-<div id="encloser">
 
+ <div id="lbencloser">
   <div id="leaderboard">
-        <h2>Leaderboard (Top Players by Total Points)</h2>
+        <h2 style="font-size: 30px;">Leaderboard (Total Points)</h2>
+        <button id="lbbackbutton">X</button>
         <table>
             <thead>
                 <tr>
@@ -26,9 +27,17 @@
             </tbody>
         </table>
     </div>
+    </div>
+
+<div id="encloser">
+
+ 
 
     <div id="logo"><div>SCRAMBLE</div><div>BATTLES</div></div>
-    <button id="playbtn">Play </button>
+    <div id="buttons">
+    <button id="playbtn">PLAY </button>
+    <button id="lbbtn">LEADERBOARD </button>
+    </div>
 
     
 
@@ -149,20 +158,22 @@
  function anim(){
 
   let i = 1 + randomInt(rows*columns);
-  let j = randomInt(26);
+  //let j = randomInt(26);
   console.log(i);
   let el = document.getElementById(i);
   //el.style.setProperty("background-color",'black');
 
-  el.innerText = alpha[j];
+  //el.innerText = alpha[j];
+
+  let alphainterval = setInterval(function() {el.innerText = alpha[randomInt(26)];}, 1000);
   //count2++;
-  setTimeout(function(){ el.innerText = ""; }, 4000);
+  setTimeout(function(){ clearInterval(alphainterval); el.innerText = ""; }, 4000);
 
   anime({
         targets: el,
         backgroundColor: [colors[count1 % 4],"rgb(255,255,255)"],
         ease: 'spring({bounce:0.35})',
-        duration: 50000
+        duration: 40000
       });
 
       count1++;
@@ -209,10 +220,36 @@
         });
     });
 
+    let lbtbn = document.getElementById("lbbtn");
+
+    lbbtn.addEventListener("mouseenter", () => {
+        anime({
+            targets: lbbtn,
+            duration: 1000,
+            scale:1.3,
+            backgroundColor: 'black',
+            color:'white',
+            ease: 'spring({bounce:0.35})'
+        });
+    });
+
+    lbbtn.addEventListener("mouseleave", () => {
+        anime({
+            targets: lbbtn,
+            duration: 1000,
+            scale:1,
+            backgroundColor: 'white',
+            color:'black',
+            ease: 'linear()'
+        });
+    });
+
 setInterval(anim,300);
 
 let container = document.getElementById("roompagecontainer");
   let page = document.getElementById("roompage");
+  let lbcontainer = document.getElementById("lbencloser");
+  let lbpage = document.getElementById("leaderboard");
 
 function disproompage(){
 
@@ -252,8 +289,49 @@ function hideroompage(){
   },320);
 }
 
+function displbpage(){
+
+  lbcontainer.style.setProperty("display","flex");
+
+  anime.timeline({
+    easing: 'easeOutQuad',
+    duration: 300
+  })
+  .add({
+    targets: lbcontainer,
+    opacity: [0,1]
+  },0)
+  .add({
+    targets: lbpage,
+    scale: [0,1]
+  },0);
+}
+
+function hidelbpage(){
+
+  anime.timeline({
+    easing: 'easeOutQuad',
+    duration: 300
+  })
+  .add({
+    targets: lbcontainer,
+    opacity: [1,0]
+  },0)
+  .add({
+    targets: lbpage,
+    scale: [1,0]
+  },0);
+
+  setTimeout(function(){
+    lbcontainer.style.setProperty("display","none");
+  },320);
+}
+
 document.getElementById("playbtn").addEventListener("click",disproompage);
 document.getElementById("backbutton").addEventListener("click",hideroompage);
+
+document.getElementById("lbbtn").addEventListener("click",displbpage);
+document.getElementById("lbbackbutton").addEventListener("click",hidelbpage);
 
 function fetchLeaderboard() {
         fetch('/leaderboard')
@@ -274,7 +352,9 @@ function fetchLeaderboard() {
             .catch(error => console.error('Error fetching leaderboard:', error));
     }
 
-    // Load leaderboard on page load
+
+
+
     window.addEventListener('load', fetchLeaderboard);
 
 
