@@ -178,16 +178,32 @@ def connect(auth):
 
 
 
-
 @socketio.on('disconnect')
 def disconnect():
     name = session.get('name')
     room = session.get('room')
+    sid = request.sid 
 
     if room in room_codes:
+        if sid in room_codes[room]['players']:
+             del room_codes[room]['players'][sid]
+        
         room_codes[room]['player_count'] -= 1
-        if room_codes[room]['player_count']<=0:
+        
+        if room in points and name in points[room]:
+            del points[room][name]
+        if name in readyplayers:
+            del readyplayers[name]
+        if room in currentword and name in currentword[room]:
+            del currentword[room][name]
+
+        if room_codes[room]['player_count'] <= 0:
             del room_codes[room]
+            if room in points:
+                del points[room]
+            if room in currentword:
+                del currentword[room]
+            
 
 @socketio.on("ready")
 def ready():
@@ -293,7 +309,7 @@ def gameover():
     conn.close()
 
     if room in points:
-        del points[room]  # NEW: Clean up after saving to prevent reuse in next game
+        del points[room]  
 
     socketio.emit("gameovertoall",winner, to=room)
 
