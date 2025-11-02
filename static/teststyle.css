@@ -65,7 +65,7 @@ body{
   height: 100%;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 5;
+  z-index: 7;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -73,7 +73,7 @@ body{
 }
 
 #readybox{
-  z-index: 6;
+  z-index: 8;
   opacity: 100%;
   background-color: white;
   border: 1px solid rgb(251, 255, 0);
@@ -128,7 +128,7 @@ body{
 
 #overlay1{
   background-color: black;
-  z-index: 4;
+  z-index: 6;
   position: absolute;
   top: 0px;
   left: 0px;
@@ -140,7 +140,7 @@ body{
 
 #overlay2{
   background-color: black;
-  z-index: 4;
+  z-index: 6;
   position: absolute;
   top: 0px;
   right: 0px;
@@ -176,7 +176,7 @@ body{
   grid-column: var(--c1)/var(--c2);
   grid-row: var(--r1)/var(--r2);
   z-index: -1;
-  background-color: white;
+  background-color: rgb(255, 255, 255);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -223,6 +223,7 @@ body{
   padding-top: 30px;
   font-size: 32px;
   font-family: 'Jua';
+  z-index: 5;
 }
 
 #input input{

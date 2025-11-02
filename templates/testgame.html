@@ -74,7 +74,7 @@
 
   let timeout = false;
 
-  let duration = 95;
+  let duration = 905;
   let countdown = document.getElementById("countdown");
   let interval;
 
@@ -89,16 +89,19 @@
 
   const createTiles = (columns, rows) => {
     let tile;
+    let count=1;
 
     for (i = 1; i <= rows; i++) {
       for (j = 1; j <= columns; j++) {
         tile = document.createElement("div");
+        tile.id = `${count}`;
         wrapper.appendChild(tile);
         tile.classList.add("tile");
         tile.style.setProperty("--r1", i);
         tile.style.setProperty("--r2", i + 1);
         tile.style.setProperty("--c1", j);
         tile.style.setProperty("--c2", j + 1);
+        count++;
       }
     }
   };
@@ -166,6 +169,11 @@
 
     duration--;
   }
+
+  function randomInt(max) {
+    return (Math.floor(Math.random() * max));
+}
+
 
   function imready() {
     let button = document.getElementById("ready");
@@ -301,6 +309,8 @@
     dispinfo(data);
   });
 
+  let currdiff;
+
   socketio.on("startgame", (word, wordlen, difficulty) => {
     startctdwn();
 
@@ -308,6 +318,7 @@
     let disp = document.getElementById("word");
     let body = document.getElementsByTagName("body");
     if (difficulty == "easy") {
+      currdiff = 'easy';
       anime({
         targets: ".tile",
         backgroundColor: "rgb(144,238,144)",
@@ -325,6 +336,7 @@
       body[0].classList.remove("hard");
       body[0].classList.add("easy");
     } else if (difficulty == "medium") {
+      currdiff = 'medium';
       anime({
         targets: ".tile",
         backgroundColor: "rgb(255,255,128)",
@@ -342,6 +354,7 @@
       body[0].classList.remove("hard");
       body[0].classList.add("medium");
     } else {
+      currdiff = 'difficult';
       anime({
         targets: ".tile",
         backgroundColor: "rgb(255,255,128)",
@@ -403,6 +416,7 @@
     let elements = document.getElementsByClassName("tile");
 
     if (difficulty == "easy") {
+      currdiff = 'easy';
       anime({
         targets: ".tile",
         backgroundColor: "rgb(144,238,144)",
@@ -422,6 +436,7 @@
       body[0].classList.remove("hard");
       body[0].classList.add("easy");
     } else if (difficulty == "medium") {
+      currdiff = 'medium';
       anime({
         targets: ".tile",
         backgroundColor: "rgb(255,255,128)",
@@ -439,6 +454,7 @@
       body[0].classList.remove("hard");
       body[0].classList.add("medium");
     } else {
+      currdiff = 'difficult';
       anime({
         targets: ".tile",
         backgroundColor: "rgb(240,128,128)",
