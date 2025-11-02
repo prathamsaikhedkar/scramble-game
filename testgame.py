@@ -212,6 +212,9 @@ def ready():
     readyplayers[name] = True
     f = 0
 
+    print(room_codes)
+    print(readyplayers)
+
     for player in room_codes[room]['players'].values():
         if readyplayers[player] == False or room_codes[room]['player_count']<=1:
             f = 1
