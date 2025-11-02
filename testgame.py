@@ -174,7 +174,7 @@ def connect(auth):
     # print(points)
 
     readyplayers[name] = False
-    socketio.emit("playeradded", points[room], to=room)
+    socketio.emit("playeradded", (points[room],room), to=room)
 
 
 
