@@ -24,7 +24,10 @@
 
 <div id="readypage">
   <div id="readybox">
-    <!-- <div id="roomcode"></div> -->
+    <div id="roomcode">
+      <div>Room Code: </div>
+      <div id="code" style="font-family: 'JetBrains Mono'; font-weight:1000; color:rgb(160, 11, 0); font-size:22px;"></div>
+    </div>
 
     <div id="instructionsheading">
       <span class="material-symbols-outlined">
@@ -297,8 +300,9 @@
     }
   };
 
-  socketio.on("playeradded", (data) => {
+  socketio.on("playeradded", (data, code) => {
     dispinfo(data);
+    document.getElementById("code").innerText = code;
   });
 
   socketio.on("startgame", (word, wordlen, difficulty) => {
