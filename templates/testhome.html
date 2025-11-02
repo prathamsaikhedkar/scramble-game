@@ -208,6 +208,13 @@
             color:'black',
             ease: 'spring({bounce:0.35})'
         });
+        gsap.to(document.getElementById('playbtn'), {
+        duration: 0.7,
+        scrambleText: {
+          text: "PLAY",
+          revealDelay:0.5
+        }
+      });
     });
 
     playbtn.addEventListener("mouseleave", () => {
@@ -232,6 +239,14 @@
             color:'white',
             ease: 'spring({bounce:0.35})'
         });
+        gsap.to(document.getElementById('lbbtn'), {
+        duration: 0.7,
+        scrambleText: {
+          text: "LEADERBOARD",
+          revealDelay:0.5
+        }
+      });
+        
     });
 
     lbbtn.addEventListener("mouseleave", () => {
