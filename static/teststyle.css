@@ -69,6 +69,7 @@ body{
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   
 }
 
@@ -170,10 +171,10 @@ body{
 }
 
 .anim1{
-  animation: anim1 500ms ease-in 6s 1 forwards ;
+  animation: anim1 500ms ease-in 5s 1 forwards ;
 }
 .anim2{
-  animation: anim2 500ms ease-in 6s 1 forwards ;
+  animation: anim2 500ms ease-in 5s 1 forwards ;
 }
 
 @keyframes anim1 {
@@ -188,6 +189,10 @@ body{
   font-family: 'aom';
   font-size: 150px;
   color: yellow;
+  padding: 0px;
+  margin: 0px;
+  
+  
 }
 
 
@@ -311,7 +316,7 @@ body{
   top: 0px;
   height: 100%;
   width: 100%;
-  background-color: rgba(151, 151, 151, 0.479);
+  background-color: rgba(0, 0, 0, 0.479);
 }
 
 #gameoverbox{
@@ -359,8 +364,8 @@ body{
   background-color: white;
   height: 80%;
   width: 30%;
-  border: 1px solid black;
-  border-radius: 3px;
+  border: 2px solid black;
+  border-radius: 1%;
   display: flex;
   flex-direction: column;
   padding: 30px 20px;
@@ -594,7 +599,7 @@ body{
 
 
 /* .easy{
-  background-color: lightgreen;
+  background-color: rgb(144,238,144);
 }
 
 .medium{
@@ -602,5 +607,5 @@ body{
 }
 
 .hard{
-  background-color: lightcoral;
+  background-color: rgb(240,128,128);
 } */

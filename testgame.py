@@ -131,7 +131,7 @@ def game():
 def leaderboard():
     conn = sql.connect("database.db")
     cursor = conn.cursor()
-    # Query: Group by name, sum total points, get time of max single-game score
+    
     cursor.execute('''
         SELECT name, SUM(points) as total_points,
                (SELECT timestamp FROM scores s2 WHERE s2.name = s1.name ORDER BY points DESC LIMIT 1) as peak_time
@@ -142,7 +142,7 @@ def leaderboard():
     data = cursor.fetchall()
     conn.close()
     
-    # Format as JSON list: [{'name': 'Alice', 'total_points': 150, 'peak_time': '2025-10-15 14:30:00'}, ...]
+    
     leaderboard_data = [{'name': row[0], 'total_points': row[1], 'peak_time': row[2]} for row in data]
     return {'leaderboard': leaderboard_data}
     
@@ -216,7 +216,7 @@ def ready():
     print(readyplayers)
 
     for player in room_codes[room]['players'].values():
-        if readyplayers[player] == False or room_codes[room]['player_count']<=1:
+        if readyplayers[player] == False or room_codes[room]['player_count']<=0:
             f = 1
             break
 

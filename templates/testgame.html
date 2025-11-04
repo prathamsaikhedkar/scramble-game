@@ -10,6 +10,7 @@
     </div>
     <div id="wordinputcontainer">
       <div id="wordinput">
+        
 
         <div id="word"></div>
         <div id="input" style="font-size: 25px;"></div>
@@ -54,7 +55,7 @@
 
     <button id="ready" onclick="imready()">I'm Ready</button>
   </div>
-  <div id="ctdwn" style="display: none">5</div>
+  <div id="ctdwn" style="display: none"></div>
 </div>
 
 <div id="gameovercontainer" style="display: none;">
@@ -155,14 +156,27 @@
     document.getElementById("overlay2").classList.add("anim2");
     let ctdwn = document.getElementById("ctdwn");
     ctdwn.style.setProperty("display", "block");
+    ctdwn.style.setProperty("opacity",0);
 
-    let i = 4;
+    let i = 3;
     inter = setInterval(function () {
       if (i == 0) {
         clearInterval(inter);
         document.getElementById("readypage").style.setProperty("display", "none");
       }
-      ctdwn.innerHTML = `<p>${i}</p>`;
+
+      ctdwn.innerText = `${i}`;
+      gsap.fromTo(ctdwn, {
+        opacity: 0,
+        fontSize: '800px'
+        
+      }, {
+        opacity: 1,
+        duration: 0.5,
+        fontSize: '150px'
+        
+      });
+      
       i--;
     }, 1000);
   }
@@ -326,6 +340,7 @@
 
   socketio.on("startgame", (word, wordlen, difficulty) => {
     startctdwn();
+    setTimeout(function(){music.play()},5500);
 
     let elements = document.getElementsByClassName("tile");
     let disp = document.getElementById("word");
@@ -338,7 +353,7 @@
         delay: anime.stagger(30, {
           grid: [columns, rows],
           from: "center",
-          start: 6200
+          start: 5800
         }),
       });
 
@@ -356,7 +371,7 @@
         delay: anime.stagger(30, {
           grid: [columns, rows],
           from: "center",
-          start: 6200
+          start: 5800
         }),
       });
 
@@ -374,7 +389,7 @@
         delay: anime.stagger(30, {
           grid: [columns, rows],
           from: "center",
-          start: 6200
+          start: 5800
         }),
       });
 
@@ -396,10 +411,38 @@
     interval = setInterval(timer, 1000);
   });
 
+  let music = new Howl({
+    src: ["{{url_for('static', filename='sounds/JeffsJingle.mp3')}}"],
+    loop: true,
+    volume: 0.7
+  }
+  );
+
+  
+let ding;
+
+
+
+
   socketio.on("validatedguess", (data) => {
     let status = document.getElementById("status");
     console.log(data);
     if (data != 0) {
+      let i = randomInt(3);
+      if (i==1) {
+        ding = new Howl({
+  src: ["{{url_for('static', filename='sounds/ding3.mp3')}}"]
+});
+      } else if (i==2) {
+        ding = new Howl({
+  src: ["{{url_for('static', filename='sounds/ding5.mp3')}}"]
+});
+      } else {
+        ding = new Howl({
+  src: ["{{url_for('static', filename='sounds/ding6.mp3')}}"]
+});
+      }
+      ding.play();
       status.style.setProperty("color","rgb(0,255,0)");
       status.innerHTML = `<p> + ${data}</p>`;
     } else {
@@ -519,6 +562,7 @@
 */
 
   socketio.on("gameovertoall", (playername) => {
+    music.stop();
       timeout = true;
       console.log("game over");
       countdown.innerHTML = `<p> Game Over </p>`;
