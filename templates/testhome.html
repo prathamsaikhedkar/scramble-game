@@ -23,7 +23,7 @@
                 </tr>
             </thead>
             <tbody id="leaderboard-body">
-                <!-- Rows populated by JavaScript -->
+                
             </tbody>
         </table>
     </div>
@@ -73,12 +73,23 @@
     
   </div>
 </div>
-</form>
+
 
 
 {% if error %}
-<p>Error: {{error}}</p>
+<!-- <form method="post" id="errorform"> -->
+<div id="errorcontainer">
+  <div id="errorpage">
+    <div id="errorheading">ERROR!</div>
+    <div id="errormessage"> {{error}}</div>
+    <button id="errorbutton" name="error" type="submit">OK</button>
+  </div>
+</div>
+<!-- </form> -->
+
 {% endif %}
+
+</form>
 
 <script>
     let columns = Math.floor(window.innerWidth / 50);
@@ -196,6 +207,16 @@
     }
 
 
+    setInterval(function() {
+      gsap.to(document.getElementById('logo').childNodes, {
+        duration: 0.7,
+        stagger: 0.7,
+        scrambleText: {
+          text: "{original}",
+          revealDelay:0.2
+        }
+      });
+    }, 5000);
 
     
 
@@ -211,13 +232,7 @@
             color:'black',
             ease: 'spring({bounce:0.35})'
         });
-        gsap.to(document.getElementById('playbtn'), {
-        duration: 0.7,
-        scrambleText: {
-          text: "PLAY",
-          revealDelay:0.5
-        }
-      });
+        
     });
 
     playbtn.addEventListener("mouseleave", () => {
@@ -242,13 +257,7 @@
             color:'white',
             ease: 'spring({bounce:0.35})'
         });
-        gsap.to(document.getElementById('lbbtn'), {
-        duration: 0.7,
-        scrambleText: {
-          text: "LEADERBOARD",
-          revealDelay:0.5
-        }
-      });
+        
         
     });
 
@@ -376,7 +385,7 @@ function fetchLeaderboard() {
 
     window.addEventListener('load', fetchLeaderboard);
 
-
+    
 
 
 </script>

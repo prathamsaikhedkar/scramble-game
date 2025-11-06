@@ -8,34 +8,7 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "idk"
 socketio = SocketIO(app)
 
-# conn = sql.connect("data.db")
-# cursor = conn.cursor()
 
-# cursor.execute('''
-#                CREATE TABLE IF NOT EXISTS words(
-#                id INTEGER PRIMARY KEY,
-#                word text NOT NULL,
-#                len INTEGER NOT NULL
-#                )
-# ''')
-
-# conn.commit()
-
-
-# for i in range(1,5):
-#     cursor.execute("INSERT INTO words(id,word,len) VALUES (?,?,?)",[i,"pear",len("pear")])
-#     conn.commit()
-# for i in range(5,10):
-#     cursor.execute("INSERT INTO words(id,word,len) VALUES (?,?,?)",[i,"banana",len("banana")])
-#     conn.commit()
-# for i in range(10,15):
-#     cursor.execute("INSERT INTO words(id,word,len) VALUES (?,?,?)",[i,"mango",len("mango")])
-#     conn.commit()
-# for i in range(15,20):
-#     cursor.execute("INSERT INTO words(id,word,len) VALUES (?,?,?)",[i,"strawberry",len("strawberry")])
-#     conn.commit()
-
-# conn.close()
 
 room_codes = {}
 points = {}
@@ -96,9 +69,13 @@ def home():
 
         join = request.form.get('join', False)
         create = request.form.get('create', False)
+        error = request.form.get('error',False)
 
-        # if name=="":
-        #     return render_template('testhome.html',error='empty name')
+        if error!=False:
+            return redirect(url_for("home"))
+
+        if name=="":
+            return render_template('testhome.html',error='empty name')
         
         if join!=False and rcode=="":
             return render_template('testhome.html',error='no room code')
@@ -122,8 +99,23 @@ def home():
     return render_template("testhome.html")
 
 
-@app.route("/game")
+@app.route("/game", methods=["POST","GET"])
 def game():
+    room = session.get('room')
+
+    if request.method=="POST":
+        error = request.form.get('error',False)
+
+        if error!=False:
+            return redirect(url_for("home"))
+
+    if room not in room_codes:
+        return render_template("testgame.html", error="room not found")
+    
+    if room_codes[room]['started']:
+        return render_template("testgame.html", error="round already ongoing")
+    
+    
 
     return render_template('testgame.html')
 
@@ -155,7 +147,7 @@ def connect(auth):
         return
     if room not in room_codes:
         leave_room(room)
-        return
+        return 
     
     
     join_room(room)
@@ -215,8 +207,12 @@ def ready():
     print(room_codes)
     print(readyplayers)
 
+    if room not in room_codes:
+        return
+        
+
     for player in room_codes[room]['players'].values():
-        if readyplayers[player] == False or room_codes[room]['player_count']<=0:
+        if readyplayers[player] == False or room_codes[room]['player_count']<=1:
             f = 1
             break
 
@@ -316,5 +312,5 @@ def gameover():
 
     socketio.emit("gameovertoall",winner, to=room)
 
-if __name__ == "__main__":
-    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
+# if __name__ == "__main__":
+#     socketio.run(app, host='0.0.0.0', port=5000, debug=True)

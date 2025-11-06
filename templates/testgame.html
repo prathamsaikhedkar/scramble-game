@@ -8,10 +8,23 @@
       
 
     </div>
+
+    
+
+    
+
     <div id="wordinputcontainer">
       <div id="wordinput">
-        
 
+        <svg id="svg" width="0" height="0">
+    <path id="box-path" fill="none" />
+</svg>
+        
+        <div class="mover" style="display: none;">
+          <svg id="moversvg" viewbox="0 0 10 10" width="100%" height="100%">
+  <circle cx="5" cy="5" r="5" fill="black" />
+</svg>
+        </div>
         <div id="word"></div>
         <div id="input" style="font-size: 25px;"></div>
       </div>
@@ -24,13 +37,13 @@
 </div>
 
 <div id="readypage">
-  <div id="readybox">
-    <div id="roomcode">
+  <div id="readybox" style="scale:0;">
+    <div id="roomcode" style="scale: 0;">
       <div>Room Code: </div>
       <div id="code" style="font-family: 'JetBrains Mono'; font-weight:1000; color:rgb(160, 11, 0); font-size:22px;"></div>
     </div>
 
-    <div id="instructionsheading">
+    <div id="instructionsheading" style="opacity: 0;">
       <span class="material-symbols-outlined">
       done_outline
       </span>
@@ -39,21 +52,21 @@
       done_outline
       </span>
     </div>
-    <div id="instructions">
+    <div id="instructions" >
       
-        <div>1. Scrambled words will be given to you, your task is to guess each word correctly.</div>
-        <div>2. Words belong to one of three difficulty levels:  
+        <div class="ins" style="opacity: 0;">1. Scrambled words will be given to you, your task is to guess each word correctly.</div>
+        <div class="ins" style="opacity: 0;">2. Words belong to one of three difficulty levels:  
           <span style="color: lightgreen;">Easy</span>, 
           <span style="color: rgb(255, 255, 6);">Medium</span>, or 
           <span style="color: lightcoral;">Hard</span>.
         </div>
-        <div>3. You get points for each correctly guessed word. The higher the difficulty, the more points you get.</div>
-        <div>4. If you are stuck ona word, you can press <span style="color: blue;">Ctrl + S</span> to Skip the word. However, some of your points will be deducted.</div>
-        <div>5. The player with the most points at the end of the time limit wins the game!</div>
+        <div class="ins" style="opacity: 0;">3. You get points for each correctly guessed word. The higher the difficulty, the more points you get.</div>
+        <div class="ins" style="opacity: 0;">4. If you are stuck ona word, you can press <span style="color: blue;">Ctrl + S</span> to Skip the word. However, some of your points will be deducted.</div>
+        <div class="ins" style="opacity: 0;">5. The player with the most points at the end of the time limit wins the game!</div>
       
     </div>
 
-    <button id="ready" onclick="imready()">I'm Ready</button>
+    <button id="ready" style="scale: 0;" onclick="imready()">I'm Ready</button>
   </div>
   <div id="ctdwn" style="display: none"></div>
 </div>
@@ -68,6 +81,19 @@
 <div id="overlay1"></div>
 <div id="overlay2"></div>
 
+{% if error %}
+<form method="post" id="form">
+<div id="errorcontainer">
+  <div id="errorpage">
+    <div id="errorheading">ERROR!</div>
+    <div id="errormessage"> {{error}}</div>
+    <button id="errorbutton" name="error" type="submit">Return Home</button>
+  </div>
+</div>
+</form>
+
+{% endif %}
+
 <script type="text/javascript">
   var socketio = io();
 
@@ -78,7 +104,7 @@
 
   let timeout = false;
 
-  let duration = 905;
+  let duration = 304;
   let countdown = document.getElementById("countdown");
   let interval;
   let currdiff='difficult';
@@ -158,28 +184,69 @@
     ctdwn.style.setProperty("display", "block");
     ctdwn.style.setProperty("opacity",0);
 
-    let i = 3;
+    let i = 3; //3
     inter = setInterval(function () {
       if (i == 0) {
+
+        ctdwn.innerText = "GO!";
+
         clearInterval(inter);
-        document.getElementById("readypage").style.setProperty("display", "none");
-      }
+
+        let tl = gsap.timeline();
+      tl.fromTo(ctdwn, {
+        opacity: 0,
+        fontSize: '1200px'
+        
+      }, {
+        opacity: 1,
+        duration: 0.3,
+        fontSize: '150px',
+        ease: "power2.out"
+      })
+      .to(ctdwn, {
+        rotate: 10,
+        duration: 0.2
+      })
+      .to(ctdwn, {
+        rotate: -10,
+        duration: 0.3
+      })
+      .to(ctdwn, {
+        fontSize: '0px',
+        duration: 0.2
+      });
+
+
+        
+        
+
+        setTimeout(function(){ 
+          
+          document.getElementById("readypage").style.setProperty("display", "none"); 
+        }, 1010);
+
+
+      } else {
 
       ctdwn.innerText = `${i}`;
       gsap.fromTo(ctdwn, {
         opacity: 0,
-        fontSize: '800px'
+        fontSize: '1200px'
         
       }, {
         opacity: 1,
-        duration: 0.5,
-        fontSize: '150px'
-        
+        duration: 0.3,
+        fontSize: '150px',
+        ease: "power2.out"
       });
       
       i--;
+
+    }
     }, 1000);
   }
+
+ 
 
   function timer() {
     let minutes = Math.floor(duration / 60);
@@ -196,16 +263,152 @@
     duration--;
   }
 
+
+  let tl = gsap.timeline();
+
+tl.fromTo("#readybox", {
+  
+  scale: 0
+} ,
+{
+  y: 0,
+  scale: 1,
+  duration: 0.8,
+  ease: "power2.out"
+})
+.to("#roomcode", {
+  scale:1,
+  duration:0.4
+})
+.fromTo("#instructionsheading", {
+  y: 7,
+  opacity: 0
+} , {
+  y:0,
+  opacity: 1,
+  duration:0.5
+})
+.fromTo(".ins", {
+  y: 7,
+  opacity: 0
+} , {
+  y:0,
+  opacity: 1,
+  stagger: 0.4
+})
+.fromTo("#ready", {
+  scale:0
+} , {
+
+  scale: 1,
+  duration: 1,
+  ease: "elastic.out(1,0.75)"
+});
+
+function generatePath(w, h, r) {
+    let d = `
+        M ${r} 0 
+        L ${w - r} 0 
+        A ${r} ${r} 0 0 1 ${w} ${r} 
+        L ${w} ${h - r} 
+        A ${r} ${r} 0 0 1 ${w - r} ${h} 
+        L ${r} ${h} 
+        A ${r} ${r} 0 0 1 0 ${h - r} 
+        L 0 ${r} 
+        A ${r} ${r} 0 0 1 ${r} 0 
+        Z
+    `;
+
+
+    console.log(d);
+    return d;
+}
+
+let animationTimeline;
+
+function getwidthheight(){
+  const rect = document.getElementById('wordinput');
+  const pathelement = document.getElementById('box-path');
+  const mover = document.querySelector('.mover');
+
+  const width = rect.offsetWidth;
+  const height = rect.offsetHeight;
+
+  console.log(width,height);
+
+  const d = generatePath(width,height,15);
+
+  //document.getElementById('svg').setAttribute('width',width);
+  //document.getElementById('svg').setAttribute('height',height);
+  document.getElementById('svg').setAttribute('viewBox',`0 0 ${height} ${width}`);
+
+  pathelement.setAttribute('d', d);
+
+  if (animationTimeline) {
+        animationTimeline.kill();
+    }
+    
+    animationTimeline = gsap.to(mover, {
+        duration: 2,                       
+        repeat: -1,                        
+        ease: "linear",                    
+        
+       
+        motionPath: {
+            path: "#box-path",             
+            align: "#box-path",            
+            autoRotate: false,             
+            alignOrigin: [0.5, 0.5]        
+        }
+    });
+}
+
+
+
+
+
+
   function randomInt(max) {
     return (Math.floor(Math.random() * max));
 }
 
 
+
+  let anim = setInterval(function(){
+    let i = randomInt(rows*columns);
+
+    let tile = document.getElementById(i);
+
+    gsap.to(tile, {
+      opacity: 0.9,
+      repeat: 3,
+      yoyo: true,
+      duration: 0.6
+    });
+
+  }, 1000);
+  
+  
+
+  
+
   function imready() {
     let button = document.getElementById("ready");
+
+    let tl = gsap.timeline();
+    tl.to(button, {
+      backgroundColor: "lightgreen",
+      duration:0.5
+    })
+    .to(button, {
+      backgroundColor: "white",
+      color: "black",
+      duration: 0.5
+    })
+
     button.innerText = "Waiting for other players..";
-    button.style.setProperty("background-color","white");
-    button.style.setProperty("color","black");
+    //button.style.setProperty("background-color","white");
+    //button.style.setProperty("color","black");
     socketio.emit("ready");
   }
 
@@ -272,6 +475,8 @@
     }
   });
 
+    let statustl;
+
   function skip() {
     if (timeout) {
       return;
@@ -293,16 +498,35 @@
       i = 2;
     }
     
+    status.style.setProperty('opacity',0);
     status.style.setProperty("color","rgb(255,0,0)");
     status.innerHTML = `<p> - ${i} </p>`;
     socketio.emit("skip");
 
     guess.value = "";
-    clearTimeout(inter2);
+
+    
+
+    gsap.timeline().fromTo(status, {
+      y:30,
+      opacity:0
+    }, {
+      y:0,
+      opacity:1,
+      duration:0.6
+    })
+    .to(status, {
+      delay:2,
+      y:-30,
+      opacity:0,
+      duration:0.6
+    });
+
+    /*clearTimeout(inter2);
     inter2 = setTimeout(function () {
       let status = document.getElementById("status");
       status.innerHTML = "";
-    }, 5000);
+    }, 5000);*/
   }
 
   const dispinfo = (data) => {
@@ -357,6 +581,8 @@
         }),
       });
 
+      
+
       /*for (element of elements){
         element.style.setProperty("background-color",'lightgreen');
       }*/
@@ -408,6 +634,8 @@
 
     showinput(wordlen);
 
+    //getwidthheight();
+
     interval = setInterval(timer, 1000);
   });
 
@@ -427,6 +655,9 @@ let ding;
   socketio.on("validatedguess", (data) => {
     let status = document.getElementById("status");
     console.log(data);
+
+    status.style.setProperty('opacity',0);
+
     if (data != 0) {
       let i = randomInt(3);
       if (i==1) {
@@ -442,8 +673,9 @@ let ding;
   src: ["{{url_for('static', filename='sounds/ding6.mp3')}}"]
 });
       }
-      ding.play();
+      //ding.play();
       status.style.setProperty("color","rgb(0,255,0)");
+      
       status.innerHTML = `<p> + ${data}</p>`;
     } else {
       const elements = document.getElementsByClassName("inputs");
@@ -452,11 +684,28 @@ let ding;
       status.innerHTML = `<p> Incorrect </p>`;
     }
 
-    clearTimeout(inter2);
+    
+
+    gsap.timeline().fromTo(status, {
+      y:30,
+      opacity:0
+    }, {
+      y:0,
+      opacity:1,
+      duration:0.6
+    })
+    .to(status, {
+      delay:2,
+      y:-30,
+      opacity:0,
+      duration:0.6
+    });
+
+    /*clearTimeout(inter2);
     inter2 = setTimeout(function () {
       let status = document.getElementById("status");
       status.innerHTML = "";
-    }, 5000);
+    }, 5000);*/
   });
 
   socketio.on("ptsupdate", (name, pts) => {
@@ -482,7 +731,6 @@ let ding;
         }),
       });
 
-      
         
 
       /*for (element of elements){
@@ -550,16 +798,14 @@ let ding;
       }
     });
 
+    
 
     showinput(wordlen);
+
+    //getwidthheight();
   });
 
-  /*anime({
-    targets: '.my-animated-element',
-            translateX: 250,
-            duration: 10000
-});
-*/
+  
 
   socketio.on("gameovertoall", (playername) => {
     music.stop();
