@@ -8,34 +8,7 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "idk"
 socketio = SocketIO(app)
 
-# conn = sql.connect("data.db")
-# cursor = conn.cursor()
 
-# cursor.execute('''
-#                CREATE TABLE IF NOT EXISTS words(
-#                id INTEGER PRIMARY KEY,
-#                word text NOT NULL,
-#                len INTEGER NOT NULL
-#                )
-# ''')
-
-# conn.commit()
-
-
-# for i in range(1,5):
-#     cursor.execute("INSERT INTO words(id,word,len) VALUES (?,?,?)",[i,"pear",len("pear")])
-#     conn.commit()
-# for i in range(5,10):
-#     cursor.execute("INSERT INTO words(id,word,len) VALUES (?,?,?)",[i,"banana",len("banana")])
-#     conn.commit()
-# for i in range(10,15):
-#     cursor.execute("INSERT INTO words(id,word,len) VALUES (?,?,?)",[i,"mango",len("mango")])
-#     conn.commit()
-# for i in range(15,20):
-#     cursor.execute("INSERT INTO words(id,word,len) VALUES (?,?,?)",[i,"strawberry",len("strawberry")])
-#     conn.commit()
-
-# conn.close()
 
 room_codes = {}
 points = {}
@@ -96,9 +69,13 @@ def home():
 
         join = request.form.get('join', False)
         create = request.form.get('create', False)
+        error = request.form.get('error',False)
 
-        # if name=="":
-        #     return render_template('testhome.html',error='empty name')
+        if error!=False:
+            return redirect(url_for("home"))
+
+        if name=="":
+            return render_template('testhome.html',error='empty name')
         
         if join!=False and rcode=="":
             return render_template('testhome.html',error='no room code')
@@ -122,8 +99,23 @@ def home():
     return render_template("testhome.html")
 
 
-@app.route("/game")
+@app.route("/game", methods=["POST","GET"])
 def game():
+    room = session.get('room')
+
+    if request.method=="POST":
+        error = request.form.get('error',False)
+
+        if error!=False:
+            return redirect(url_for("home"))
+
+    if room not in room_codes:
+        return render_template("testgame.html", error="room not found")
+    
+    if room_codes[room]['started']:
+        return render_template("testgame.html", error="round already ongoing")
+    
+    
 
     return render_template('testgame.html')
 
@@ -131,7 +123,7 @@ def game():
 def leaderboard():
     conn = sql.connect("database.db")
     cursor = conn.cursor()
-    # Query: Group by name, sum total points, get time of max single-game score
+    
     cursor.execute('''
         SELECT name, SUM(points) as total_points,
                (SELECT timestamp FROM scores s2 WHERE s2.name = s1.name ORDER BY points DESC LIMIT 1) as peak_time
@@ -142,7 +134,7 @@ def leaderboard():
     data = cursor.fetchall()
     conn.close()
     
-    # Format as JSON list: [{'name': 'Alice', 'total_points': 150, 'peak_time': '2025-10-15 14:30:00'}, ...]
+    
     leaderboard_data = [{'name': row[0], 'total_points': row[1], 'peak_time': row[2]} for row in data]
     return {'leaderboard': leaderboard_data}
     
@@ -155,7 +147,7 @@ def connect(auth):
         return
     if room not in room_codes:
         leave_room(room)
-        return
+        return 
     
     
     join_room(room)
@@ -174,8 +166,7 @@ def connect(auth):
     # print(points)
 
     readyplayers[name] = False
-    socketio.emit("playeradded", (points[room], room), to=room)
-
+    socketio.emit("playeradded", (points[room],room), to=room)
 
 
 
@@ -183,11 +174,28 @@ def connect(auth):
 def disconnect():
     name = session.get('name')
     room = session.get('room')
+    sid = request.sid 
 
     if room in room_codes:
+        if sid in room_codes[room]['players']:
+             del room_codes[room]['players'][sid]
+        
         room_codes[room]['player_count'] -= 1
-        if room_codes[room]['player_count']<=0:
+        
+        if room in points and name in points[room]:
+            del points[room][name]
+        if name in readyplayers:
+            del readyplayers[name]
+        if room in currentword and name in currentword[room]:
+            del currentword[room][name]
+
+        if room_codes[room]['player_count'] <= 0:
             del room_codes[room]
+            if room in points:
+                del points[room]
+            if room in currentword:
+                del currentword[room]
+            
 
 @socketio.on("ready")
 def ready():
@@ -195,6 +203,13 @@ def ready():
     room = session.get('room')
     readyplayers[name] = True
     f = 0
+
+    print(room_codes)
+    print(readyplayers)
+
+    if room not in room_codes:
+        return
+        
 
     for player in room_codes[room]['players'].values():
         if readyplayers[player] == False or room_codes[room]['player_count']<=1:
@@ -293,7 +308,7 @@ def gameover():
     conn.close()
 
     if room in points:
-        del points[room]  # NEW: Clean up after saving to prevent reuse in next game
+        del points[room]  
 
     socketio.emit("gameovertoall",winner, to=room)
 
