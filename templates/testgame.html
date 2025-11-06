@@ -564,7 +564,7 @@ function getwidthheight(){
 
   socketio.on("startgame", (word, wordlen, difficulty) => {
     startctdwn();
-    setTimeout(function(){music.play()},5500);
+    //setTimeout(function(){music.play()},5500);
 
     let elements = document.getElementsByClassName("tile");
     let disp = document.getElementById("word");
