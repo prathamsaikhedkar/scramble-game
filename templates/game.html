@@ -27,9 +27,10 @@
 
     <input type="text" placeholder="Guess" name="guess" id="guess" value="" />
     <div id="status"></div>
-    <button id="mobileskipbtn" type="button" onclick="skip()">Skip</button>
   </div>
 </div>
+
+<button id="mobileskipbtn" type="button" onclick="skip()">SKIP</button>
 
 <div id="readypage">
   <div id="readybox" style="scale:0;">
@@ -403,6 +404,18 @@
 
     gsap.timeline().fromTo(status, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6 })
                    .to(status, { delay: 2, y: -30, opacity: 0, duration: 0.6 });
+  }
+
+  const mobileBtn = document.getElementById("mobileskipbtn");
+  if (mobileBtn) {
+    mobileBtn.addEventListener("click", function(e) {
+      e.preventDefault();
+      skip();
+    });
+    mobileBtn.addEventListener("touchstart", function(e) {
+      e.preventDefault();
+      skip();
+    }, { passive: false });
   }
 
   const dispinfo = (data) => {
