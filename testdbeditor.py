@@ -32,10 +32,10 @@ cursor = conn.cursor()
 #     conn.commit()
 
 cursor.execute('''
-    SELECT count(*) FROM words;               
+    DELETE FROM scores;               
 ''')
 
-print(cursor.fetchall())
+conn.commit()
 
 
 

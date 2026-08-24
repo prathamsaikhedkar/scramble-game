@@ -1,0 +1,6 @@
+set readyplayers == 2 for round start
+set timer of round
+undo the deletion of room code when no players remaining
+undo the comment of routing to game errors
+remove line 210 in testgame.py
+set i to 3 in testgame countdown

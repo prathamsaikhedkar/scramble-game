@@ -23,7 +23,7 @@
                 </tr>
             </thead>
             <tbody id="leaderboard-body">
-                <!-- Rows populated by JavaScript -->
+                
             </tbody>
         </table>
     </div>
@@ -36,8 +36,7 @@
     <div id="logo"><div>SCRAMBLE</div><div>BATTLES</div></div>
     <div id="buttons">
     <button id="playbtn">PLAY </button>
-    <button id="lbbtn" disabled>LEADERBOARD </button>
-    <div style="font-family: 'Jua'; margin-top:5px; font-size:12px">(Coming Soon)</div>
+    <button id="lbbtn">LEADERBOARD</button>
     </div>
 
     
@@ -74,12 +73,23 @@
     
   </div>
 </div>
-</form>
+
 
 
 {% if error %}
-<p>Error: {{error}}</p>
+<!-- <form method="post" id="errorform"> -->
+<div id="errorcontainer">
+  <div id="errorpage">
+    <div id="errorheading">ERROR!</div>
+    <div id="errormessage"> {{error}}</div>
+    <button id="errorbutton" name="error" type="submit">OK</button>
+  </div>
+</div>
+<!-- </form> -->
+
 {% endif %}
+
+</form>
 
 <script>
     let columns = Math.floor(window.innerWidth / 50);
@@ -197,6 +207,20 @@
     }
 
 
+    setInterval(function() {
+      gsap.to(document.getElementById('logo').childNodes, {
+        duration: 0.7,
+        stagger: 0.7,
+        scrambleText: {
+          text: "{original}",
+          revealDelay:0.2
+        }
+      });
+    }, 5000);
+
+    
+
+
     let playtbn = document.getElementById("playbtn");
 
     playbtn.addEventListener("mouseenter", () => {
@@ -208,6 +232,7 @@
             color:'black',
             ease: 'spring({bounce:0.35})'
         });
+        
     });
 
     playbtn.addEventListener("mouseleave", () => {
@@ -232,6 +257,8 @@
             color:'white',
             ease: 'spring({bounce:0.35})'
         });
+        
+        
     });
 
     lbbtn.addEventListener("mouseleave", () => {
@@ -358,7 +385,7 @@ function fetchLeaderboard() {
 
     window.addEventListener('load', fetchLeaderboard);
 
-
+    
 
 
 </script>
